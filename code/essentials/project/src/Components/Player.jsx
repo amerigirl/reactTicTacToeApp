@@ -11,13 +11,16 @@ export default function Player({ initialName, symbol }) {
     setIsEditing((editing) => !editing); //add the function call to deal with possible schedule issues
   }
 
+  function handleNameChange(event) {
+    setPlayerName(event.target.value);
+  }
   //   let editiblePlayerName = <span className="player-name">{playerName}</span>;
 
   return (
     <li>
       <span className="player">
         {isEditing ? (
-          <input type="text" required />
+          <input type="text" required onChange={(event) => handleNameChange(event)}/>
         ) : (
           <span className="player-name">{playerName}</span>
         )}
