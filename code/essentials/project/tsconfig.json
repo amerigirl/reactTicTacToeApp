@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",                          // Target modern JavaScript
+    "module": "ESNext",                          // Use ES modules
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],    // Include DOM and modern JavaScript
+    "jsx": "react",                              // Enable JSX
+    "allowJs": true,                             // Allow JavaScript files
+    "checkJs": false,                             // Enable type checking for JavaScript files
+    "strict": true,                              // Enable strict type checking
+    "esModuleInterop": true,                     // Allow default imports
+    "moduleResolution": "node",                  // Resolve modules in Node.js style
+    "skipLibCheck": true,                        // Skip type checking for third-party libraries
+    "forceConsistentCasingInFileNames": true     // Enforce consistent casing in file names
+  },
+  "include": ["src/**/*"]                             // Include the src directory
+
+} 
+
