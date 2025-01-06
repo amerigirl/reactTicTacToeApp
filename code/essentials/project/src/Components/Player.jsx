@@ -20,7 +20,7 @@ export default function Player({ initialName, symbol }) {
     <li>
       <span className="player">
         {isEditing ? (
-          <input type="text" required onChange={(event) => handleNameChange(event)}/>
+          <input type="text" required onChange={handleNameChange}/>
         ) : (
           <span className="player-name">{playerName}</span>
         )}
