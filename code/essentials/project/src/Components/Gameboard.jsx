@@ -6,7 +6,16 @@ const initialGameboard = [
   [null, null, null],
 ];
 
-export default function Gameboard( {onSelectSquare} ) {
+export default function Gameboard({ onSelectSquare, turns }) {
+  let gameboard = initialGameboard;
+
+  //destructuring will give you the player symbol and the row and column selected by the player
+  for (const turn of turns) {
+    const { square, player } = turn;
+    const { row, col } = square;
+
+    gameboard[row][col] = player;
+  }
   // const [gameboard, setGameboard] = useState(initialGameboard);
 
   // function handleSelectSquare(rowIndex, colIndex) {
@@ -17,7 +26,7 @@ export default function Gameboard( {onSelectSquare} ) {
   //   });
 
   //   onSelectSquare(); //this should be a function
-  }
+  // }
 
   return (
     <ol id="game-board">
@@ -26,7 +35,7 @@ export default function Gameboard( {onSelectSquare} ) {
           <ol>
             {row.map((playerSymbol, colIndex) => (
               <li key={colIndex}>
-                <button onClick={onSelectSquare}>{playerSymbol}</button>
+                <button onClick={() =>onSelectSquare(rowIndex, colIndex)}>{playerSymbol}</button>
               </li>
             ))}
           </ol>
