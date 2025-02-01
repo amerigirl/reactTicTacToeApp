@@ -6,7 +6,11 @@ import Log from "./Components/Log";
 import { WINNING_COMBINATIONS } from "./Components/WinningCombinations";
 import GameOver from "./Components/GameOver";
 
-const initialGameboard = [
+const PLAYERS = {
+  X: 'Player 1',
+  O: 'Player 2',
+}
+const INITIAL_GAME_BOARD = [
   [null, null, null],
   [null, null, null],
   [null, null, null],
@@ -22,27 +26,7 @@ function deriveActivePlayer(gameTurns) {
   return currentPlayer;
 }
 
-function App() {
-  const [players, setPlayers] = useState({
-    'X': 'Player 1',
-    'O': 'Player 2'
-  });
-  const [gameTurns, setGameTurns] = useState([]);
-  // const [hasWinner, setHasWinner] = useState(false);
-  //const [activePlayer, setActivePlayer] = useState("X");
-
-  const activePlayer = deriveActivePlayer(gameTurns);
-
-  let gameBoard = [...initialGameboard.map(array => [...array])]; //create a copy of the initial gameboard
-
-  //destructuring will give you the player symbol and the row and column selected by the player
-  for (const turn of gameTurns) {
-    const { square, player } = turn;
-    const { row, col } = square;
-
-    gameBoard[row][col] = player;
-  }
-
+function deriveWinner(gameBoard, players) {
   let winner = null;
 
   for (const combination of WINNING_COMBINATIONS) {
@@ -61,69 +45,96 @@ function App() {
       winner = players[firstSquareSymbol];
     }
   }
-  const hasDraw = gameTurns.length === 9 && !winner; 
 
+  return winner;
+}
 
-    function handleSelectSquare(rowIndex, colIndex) {
-      //setActivePlayer((curActivePlayer) => (curActivePlayer === "X" ? "O" : "X"));
-      setGameTurns((prevTurns) => {
-        //update the turns so that the first item is always the latest turn
-        //to avoid merging states, create a new var to hold the previous player
+function deriveGameBoard(gameTurns) {
+  
+  let gameBoard = [...INITIAL_GAME_BOARD.map((array) => [...array])]; //create a copy of the initial gameboard
 
-        const currentPlayer = deriveActivePlayer(prevTurns);
+  //destructuring will give you the player symbol and the row and column selected by the player
+  for (const turn of gameTurns) {
+    const { square, player } = turn;
+    const { row, col } = square;
 
-        const updatedTurns = [
-          { square: { row: rowIndex, col: colIndex }, player: currentPlayer },
-          ...prevTurns,
-        ]; //make the game turns an array of objects
-
-        return updatedTurns;
-      });
-    }
-
-    function handleRematch() {
-      setGameTurns([]);
-    }
-
-    function handlePlayerNameChange(symbol, newName){
-      setPlayers(prevPlayers =>{
-        return {
-          ...prevPlayers,
-          [symbol]: newName
-        }
-      })
-    }
-
-    return (
-      <>
-        <Header />
-        <main>
-          <div id="game-container">
-            <ol id="players" className="highlight-player">
-              <Player
-                initialName="Player 1"
-                symbol="X"
-                isActive={activePlayer === "X"}
-                onChangeName={handlePlayerNameChange}
-              />
-              <Player
-                initialName="Player 2"
-                symbol="O"
-                isActive={activePlayer === "O"}
-                onChangeName={handlePlayerNameChange}
-              />
-            </ol>
-            {(winner || hasDraw) && <GameOver winner={winner} onRematch={handleRematch} />}
-            <GameBoard
-              onSelectSquare={handleSelectSquare}
-              activePlayerSymbol={activePlayer}
-              turns={gameTurns}
-              board={gameBoard}
-            />
-          </div>
-          <Log turns={gameTurns} />
-        </main>
-      </>
-    );
+    gameBoard[row][col] = player;
   }
+  return gameBoard;
+}
+
+function App() {
+  const [players, setPlayers] = useState(PLAYERS);
+  const [gameTurns, setGameTurns] = useState([]);
+
+  const activePlayer = deriveActivePlayer(gameTurns);
+
+  const gameBoard = deriveGameBoard(gameTurns);
+  const winner = deriveWinner(gameBoard, players);
+  const hasDraw = gameTurns.length === 9 && !winner;
+
+  function handleSelectSquare(rowIndex, colIndex) {
+    //setActivePlayer((curActivePlayer) => (curActivePlayer === "X" ? "O" : "X"));
+    setGameTurns((prevTurns) => {
+      //update the turns so that the first item is always the latest turn
+      //to avoid merging states, create a new var to hold the previous player
+
+      const currentPlayer = deriveActivePlayer(prevTurns);
+
+      const updatedTurns = [
+        { square: { row: rowIndex, col: colIndex }, player: currentPlayer },
+        ...prevTurns,
+      ]; //make the game turns an array of objects
+
+      return updatedTurns;
+    });
+  }
+
+  function handleRematch() {
+    setGameTurns([]);
+  }
+
+  function handlePlayerNameChange(symbol, newName) {
+    setPlayers((prevPlayers) => {
+      return {
+        ...prevPlayers,
+        [symbol]: newName,
+      };
+    });
+  }
+
+  return (
+    <>
+      <Header />
+      <main>
+        <div id="game-container">
+          <ol id="players" className="highlight-player">
+            <Player
+              initialName={players.X}
+              symbol="X"
+              isActive={activePlayer === "X"}
+              onChangeName={handlePlayerNameChange}
+            />
+            <Player
+              initialName={players.O}
+              symbol="O"
+              isActive={activePlayer === "O"}
+              onChangeName={handlePlayerNameChange}
+            />
+          </ol>
+          {(winner || hasDraw) && (
+            <GameOver winner={winner} onRematch={handleRematch} />
+          )}
+          <GameBoard
+            onSelectSquare={handleSelectSquare}
+            activePlayerSymbol={activePlayer}
+            turns={gameTurns}
+            board={gameBoard}
+          />
+        </div>
+        <Log turns={gameTurns} />
+      </main>
+    </>
+  );
+}
 export default App;
