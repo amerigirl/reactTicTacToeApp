@@ -29,7 +29,7 @@ function App() {
 
   const activePlayer = deriveActivePlayer(gameTurns);
 
-  let gameBoard = initialGameboard;
+  let gameBoard = [...initialGameboard.map(array => [...array])]; //create a copy of the initial gameboard
 
   //destructuring will give you the player symbol and the row and column selected by the player
   for (const turn of gameTurns) {
@@ -77,6 +77,10 @@ function App() {
       });
     }
 
+    function handleRematch() {
+      setGameTurns([]);
+    }
+
     return (
       <>
         <Header />
@@ -94,7 +98,7 @@ function App() {
                 isActive={activePlayer === "O"}
               />
             </ol>
-            {(winner || hasDraw) && <GameOver winner={winner} />}
+            {(winner || hasDraw) && <GameOver winner={winner} onRematch={handleRematch} />}
             <GameBoard
               onSelectSquare={handleSelectSquare}
               activePlayerSymbol={activePlayer}
